@@ -1,0 +1,87 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model Tb_Lista_Importacoes {
+  Co_Importacao    Int       @default(autoincrement())
+  Co_Tp_Importacao Int?      @db.SmallInt
+  Co_Ct_Importacao Int?      @db.SmallInt
+  Dt_Importacao    DateTime? @db.Timestamp(6)
+  Mt_Importacao    Int?
+  Qt_Importado     BigInt?
+  Dt_Alteracao     DateTime? @db.Timestamp(6)
+  Mt_Alteracao     Int?
+  De_Observacao    String?   @db.VarChar(100)
+  Ic_Ativo         Int?      @db.SmallInt
+
+  @@ignore
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model Tb_Moedas_Bonificacao {
+  Id_Moedas_Bonificacao Int       @id(map: "PK_Tb_Moedas_Bonificacao") @default(autoincrement())
+  Dt_Bonificacao        DateTime? @db.Date
+  Mt_Usuario            Int?
+  De_Bonificacao        String?   @db.VarChar(100)
+  Vr_Bonificacao        BigInt?
+  St_Bonificacao        Int?      @db.SmallInt
+  Co_Importacao         BigInt?
+  Dt_Cadastro           DateTime? @db.Timestamp(6)
+  Mt_Cadastro           Int?
+  Dt_Alteracao          DateTime? @db.Timestamp(6)
+  Mt_Alteracao          Int?
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model Tb_Moedas_Deducao {
+  Id_Moedas_Deducao Int       @id(map: "PK_Tb_Moedas_Deducao") @default(autoincrement())
+  Dt_Deducao        DateTime? @db.Date
+  Mt_Usuario        Int?
+  De_Deducao        String?   @db.VarChar(100)
+  Vr_Deducao        BigInt?
+  St_Deducao        Int?      @db.SmallInt
+  Co_Importacao     BigInt?
+  Dt_Cadastro       DateTime? @db.Timestamp(6)
+  Mt_Cadastro       Int?
+  Dt_Alteracao      DateTime? @db.Timestamp(6)
+  Mt_Alteracao      Int?
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model Tb_Usuarios {
+  Id_Usuario   Int       @id(map: "PK_Tb_Usuarios") @default(autoincrement())
+  Mt_Usuario   Int?      @unique(map: "UK_Mt_Usuario_Tb_Usuarios")
+  Sn_Usuario   String?   @db.VarChar(60)
+  Nv_Acesso    Int?      @db.SmallInt
+  Dt_Cadastro  DateTime? @db.Timestamp(6)
+  Mt_Cadastro  Int?
+  Dt_Alteracao DateTime? @db.Timestamp(6)
+  Mt_Alteracao Int?
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model Tb_Usuarios_Moedas {
+  Id_Usuarios_Moedas Int       @id(map: "PK_Tb_Usuarios_Moedas") @default(autoincrement())
+  Dt_Moedas          DateTime? @db.Date
+  Mt_Usuario         Int?
+  Qt_Moedas          BigInt?
+  Observacao         String?   @db.VarChar(100)
+  Vr_Bonificacao     BigInt?
+  De_Bonificacao     String?   @db.VarChar(100)
+  Vr_Deducao         BigInt?
+  De_Deducao         String?   @db.VarChar(100)
+  St_Moedas          Int?      @db.SmallInt
+  Co_Importacao      BigInt?
+  Co_Tp_Importacao   Int?      @db.SmallInt
+  Dt_Cadastro        DateTime? @db.Timestamp(6)
+  Mt_Cadastro        Int?
+  Dt_Alteracao       DateTime? @db.Timestamp(6)
+  Mt_Alteracao       Int?
+}
