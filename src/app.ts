@@ -19,5 +19,5 @@ app.use(express.json());
 app.use(router);
 app.use(authRouter);
 app.listen(port, () => {
-  console.log(`Servidor rodando em http://localhost:${port}`);
+  `Servidor rodando em http://localhost:${port}`;
 });

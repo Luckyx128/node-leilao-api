@@ -1,18 +1,43 @@
 import { PrismaClient } from "@prisma/client";
-import { Stats } from "node:fs";
-
+import bcrypt from "bcrypt";
 const prisma = new PrismaClient();
 
 const User = {
   getUser: async () => {
-    const user = await prisma.tb_Usuarios.findFirst();
-    return user;
+    return prisma.tb_Usuarios.findMany();
   },
   consultUser: async (registration: number) => {
-    const user = await prisma.tb_Usuarios.findUnique({
+    return prisma.tb_Usuarios.findUnique({
       where: { Mt_Usuario: registration },
     });
-    return user;
+  },
+  createUser: async (registration: number, password: string) => {
+    return prisma.tb_Usuarios.create({
+      data: {
+        Mt_Usuario: registration,
+        Sn_Usuario: password,
+      },
+    });
+  },
+  updateUser: async (registration: number, password: string) => {
+    try {
+      const user = await User.consultUser(registration);
+      if (user) {
+        user;
+        const updatedUser = await prisma.tb_Usuarios.update({
+          where: { Mt_Usuario: registration },
+          data: { Sn_Usuario: password },
+        });
+        if (!updatedUser) {
+          throw new Error("Update failed");
+        }
+        return "success";
+      } else {
+        return "incorrect";
+      }
+    } catch (error) {
+      throw new Error("Update failed");
+    }
   },
 };
 
