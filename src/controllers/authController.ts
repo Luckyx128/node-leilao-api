@@ -1,4 +1,4 @@
-import e, { Request, Response } from "express";
+import { Request, Response } from "express";
 import authService from "../services/authService";
 interface User {
   registration?: number;
@@ -13,8 +13,19 @@ const authController = {
         const registration = user.registration;
         const password = user.password;
         const result = await authService.login(registration, password);
+        const io = req.app.get("io");
+      
+          console.log("Logado");
+          io.emit("login", {
+            registration: user.registration,
+          });
+      
+        
         switch (result) {
+        
+           
           case "success":
+           
             res.json({
               message: { result },
             });

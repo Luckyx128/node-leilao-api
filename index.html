@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Chat Example</title>
+    <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+  </head>
+  <body>
+    <ul id="messages"></ul>
+    <form id="form">
+      <input id="input" autocomplete="off" /><button>Send</button>
+    </form>
+    New message: <span id="new-message"></span>
+    <script>
+      const socket = io("http://localhost:9000", {
+        path: "/socket.io",
+      });
+
+      const form = document.getElementById("form");
+      const input = document.getElementById("input");
+      const messages = document.getElementById("messages");
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        if (input.value) {
+          socket.emit("chat message", input.value);
+          input.value = "";
+        }
+      });
+
+      socket.on("login", (msg) => {
+        console.log(msg);
+      });
+
+      socket.on("chat message", (msg) => {
+        const item = document.createElement("li");
+        item.textContent = msg;
+        messages.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+      });
+      socket.on("connect", () => {
+        console.log("Conectado ao servidor");
+      });
+
+      socket.on("disconnect", () => {
+        console.log("Desconectado do servidor");
+      });
+
+      socket.on("error", (error) => {
+        console.error("Erro de conexão:", error);
+      });
+    </script>
+  </body>
+</html>

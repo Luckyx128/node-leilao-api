@@ -13,6 +13,8 @@ const userController = {
   getUsers: async (req: CustomRequest, res: CustomResponse) => {
     try {
       const user = await userService.getUser();
+      const io = req.app.get("io");
+      io.emit("userCreated", user);
       res.json({ message: "Users retrieved", user });
     } catch (error) {
       res.status(500).json({ error: "Internal server error" });
