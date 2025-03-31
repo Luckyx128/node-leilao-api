@@ -40,7 +40,7 @@ const authController = {
             break;
         }
       } else {
-        res.status(402).json({ message: "empty fields" });
+        res.status(401).json({ message: "empty fields" });
       }
     } catch (error) {
       res.status(500).json({ message: "data base error" });

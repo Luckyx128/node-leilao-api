@@ -6,7 +6,8 @@ import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
 import authRouter from "./routes/authRouter";
-
+import leilaoRouter from "./routes/leilaoRouter"
+import router from "./routes/userRouter";
 
 dotenv.config();
 const app = express();
@@ -21,7 +22,6 @@ const io = new Server(server, {
     }
 
 });
-const updateInterval = 60 * 60 * 1000;
 const port = process.env.PORT ?? 3000;
 
 app.use(
@@ -69,6 +69,8 @@ io.on("connection", (socket: any) => {
 });
 
 app.use(authRouter);
+app.use(leilaoRouter);
+app.use(router);
 server.listen(port, () => {
   console.log(`Servidor rodando na porta ${port}`);
 });

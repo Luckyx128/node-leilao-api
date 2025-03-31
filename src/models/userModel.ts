@@ -1,8 +1,7 @@
 import { PrismaClient } from "@prisma/client";
-import bcrypt from "bcrypt";
 const prisma = new PrismaClient();
 
-const User = {
+const UserModel = {
   getUser: async () => {
     return prisma.tb_Usuarios.findMany();
   },
@@ -21,7 +20,7 @@ const User = {
   },
   updateUser: async (registration: number, password: string) => {
     try {
-      const user = await User.consultUser(registration);
+      const user = await UserModel.consultUser(registration);
       if (user) {
         user;
         const updatedUser = await prisma.tb_Usuarios.update({
@@ -41,4 +40,4 @@ const User = {
   },
 };
 
-export { User };
+export { UserModel };

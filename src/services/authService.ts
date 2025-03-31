@@ -1,9 +1,9 @@
-import { User } from "../models/userModel";
+import { UserModel } from "../models/userModel";
 import bcrypt from "bcrypt";
 const authService = {
   login: async (registration: number, password: string) => {
     try {
-      const user = await User.consultUser(registration);
+      const user = await UserModel.consultUser(registration);
 
       if (user) {
         const senha: string = user.Sn_Usuario || "";
@@ -17,17 +17,16 @@ const authService = {
       } else {
         return "incorrect";
       }
-      return user;
     } catch (error) {
       throw new Error("Login failed");
     }
   },
   register: async (registration: number, password: string) => {
     try {
-      const user = await User.consultUser(registration);
+      const user = await UserModel.consultUser(registration);
       if (!user) {
         const hashedPassword = await bcrypt.hash(password, 10);
-        const result = await User.createUser(registration, hashedPassword);
+        const result = await UserModel.createUser(registration, hashedPassword);
         if (result) {
           return "success";
         } else {
@@ -42,10 +41,10 @@ const authService = {
   },
   updateLogin: async (registration: number, password: string) => {
     try {
-      const user = await User.consultUser(registration);
+      const user = await UserModel.consultUser(registration);
       if (user) {
         const hashedPassword = await bcrypt.hash(password, 10);
-        const result = await User.updateUser(registration, hashedPassword);
+        const result = await UserModel.updateUser(registration, hashedPassword);
         if (result) {
           return "success";
         } else {
