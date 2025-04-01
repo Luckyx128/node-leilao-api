@@ -8,7 +8,7 @@ import morgan from "morgan";
 import authRouter from "./routes/authRouter";
 import leilaoRouter from "./routes/leilaoRouter"
 import router from "./routes/userRouter";
-
+import lancesRouter from "./routes/lancesRouter";
 dotenv.config();
 const app = express();
 const server = require("http").createServer(app);
@@ -70,6 +70,7 @@ io.on("connection", (socket: any) => {
 
 app.use(authRouter);
 app.use(leilaoRouter);
+app.use(lancesRouter)
 app.use(router);
 server.listen(port, () => {
   console.log(`Servidor rodando na porta ${port}`);

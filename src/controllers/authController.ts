@@ -33,17 +33,17 @@ const authController = {
           case "incorrect":
             res
               .status(401)
-              .json({ message: "Invalid registration or password" });
+              .json({ message: "Matricula ou Senha invalida" });
             break;
           default:
-            res.status(500).json({ message: "data base error" });
+            res.status(500).json({ message: "Erro no banco de Dados" });
             break;
         }
       } else {
-        res.status(401).json({ message: "empty fields" });
+        res.status(401).json({ message: "Campos vazios" });
       }
     } catch (error) {
-      res.status(500).json({ message: "data base error" });
+      res.status(500).json({ message: "Erro no banco de Dados" });
     }
   },
   register: async (req: Request, res: Response) => {

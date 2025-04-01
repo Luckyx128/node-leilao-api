@@ -9,7 +9,7 @@ const LeilaoController = {
             res.json({message:'sucesso',Leiloes})
         }
         catch(error){
-            res.status(500).json({message:'Data base error'})
+            res.status(500).json({message:'Erro no banco de dados'})
         }
   },
     consultLeilao: async (req:Request,res:Response)=> {
@@ -19,7 +19,7 @@ const LeilaoController = {
             const leilao = await leilaoService.consultLeilao(id)
             res.json(leilao)
         }catch (error){
-            throw error
+            res.status(500).json({message:"Erro no banco de dados"})
         }
     }
 }
