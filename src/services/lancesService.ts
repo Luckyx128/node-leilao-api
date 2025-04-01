@@ -7,8 +7,8 @@ const LanceService = {
    fazerLance: async (lance:LanceLeilao) =>{
       const Dh_Lance = new Date().toISOString();
       lance.Dh_Lance = Dh_Lance
-   
-      return lance
+      
+      return LancesModel.realizarLance(lance)
    }
 }
 

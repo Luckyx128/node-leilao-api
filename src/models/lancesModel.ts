@@ -22,6 +22,7 @@ const LancesModel = {
             Vr_Lance: lanceLeilao.Vr_Lance,
          },
       });
+      return 'Lance realizado com sucesso'
    }catch(e){
       throw e
    }
