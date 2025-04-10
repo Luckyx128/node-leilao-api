@@ -9,24 +9,25 @@ import authRouter from "./routes/authRouter";
 import leilaoRouter from "./routes/leilaoRouter"
 import router from "./routes/userRouter";
 import lancesRouter from "./routes/lancesRouter";
+import http from "http";
 dotenv.config();
 const app = express();
-const server = require("http").createServer(app);
+const server = http.createServer(app);
 const io = new Server(server, {
-     path:'/socket.io',
-    cors: {
-        origin: '*', 
-        methods: ['GET', 'POST'],
-        credentials: true,
-        allowedHeaders: ['Content-Type'],
-    }
+  path: '/socket.io',
+  cors: {
+    origin: '*',
+    methods: ['GET', 'POST'],
+    credentials: true,
+    allowedHeaders: ['Content-Type'],
+  }
 
 });
 const port = process.env.PORT ?? 3000;
 
 app.use(
   cors({
-    origin: '*', 
+    origin: '*',
     methods: ['GET', 'POST'],
     allowedHeaders: ['Content-Type'],
 
