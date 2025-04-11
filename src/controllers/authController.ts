@@ -26,11 +26,11 @@ const authController = {
         if(result === "incorrect")  res
           .status(401)
           .json({ message: "Matricula ou Senha invalida" });
-
-
-            res.json({
+        console.log(typeof result)
+        if (typeof result === "object") res.json({
               message: { result },
             });
+
 
     } catch (error) {
       res.status(500).json({ message: "Erro no banco de Dados" });

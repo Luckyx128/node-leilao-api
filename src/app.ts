@@ -33,14 +33,8 @@ const port = process.env.PORT ?? 3000;
 // Middlewares
 app.use(cors({
   origin: "*",
-  methods: ["GET", "POST"],
-  allowedHeaders: ["Content-Type"],
-  credentials: true,
 }));
 app.use(helmet({
-  crossOriginEmbedderPolicy: false,
-  crossOriginResourcePolicy: { policy: "cross-origin" },
-  contentSecurityPolicy: false,
 }));
 app.use(morgan("dev"));
 app.use(express.json());
@@ -61,10 +55,11 @@ io.on("connection", (socket) => {
 });
 
 // Rotas
-app.use(authRouter);
-app.use(leilaoRouter);
-app.use(lancesRouter);
-app.use(router);
+//TODO: Ajustar rotas erro na condicionais das controller req não pode ser usada mais de uma vez
+app.use("/auth",authRouter);
+app.use("/leilao",leilaoRouter);
+app.use("/lances",lancesRouter);
+app.use("/router",router);
 
 // Swagger
 const swaggerOptions = {
