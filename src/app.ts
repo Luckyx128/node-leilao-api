@@ -1,66 +1,57 @@
 // src/app.ts
 import express from "express";
 import dotenv from "dotenv";
+import http from "http";
 import { Server } from "socket.io";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
+import swaggerUi from "swagger-ui-express";
+import swaggerJSDoc from "swagger-jsdoc";
+
+// Rotas
 import authRouter from "./routes/authRouter";
-import leilaoRouter from "./routes/leilaoRouter"
-import router from "./routes/userRouter";
+import leilaoRouter from "./routes/leilaoRouter";
 import lancesRouter from "./routes/lancesRouter";
-import http from "http";
+import router from "./routes/userRouter";
+
 dotenv.config();
+
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
-  path: '/socket.io',
+  path: "/socket.io",
   cors: {
-    origin: '*',
-    methods: ['GET', 'POST'],
+    origin: "*",
+    methods: ["GET", "POST"],
     credentials: true,
-    allowedHeaders: ['Content-Type'],
-  }
-
+    allowedHeaders: ["Content-Type"],
+  },
 });
 const port = process.env.PORT ?? 3000;
 
-app.use(
-  cors({
-    origin: '*',
-    methods: ['GET', 'POST'],
-    allowedHeaders: ['Content-Type'],
-
-  }),
-);
-app.use(
-  helmet({
-    crossOriginEmbedderPolicy: false,
-    crossOriginResourcePolicy: { policy: "cross-origin" },
-    contentSecurityPolicy: false, // Desabilita temporariamente para debug
-  }),
-);
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "http://localhost:3000");
-  res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  res.header("Access-Control-Allow-Credentials", "true");
-  if ("OPTIONS" === req.method) {
-    res.sendStatus(200);
-  } else {
-    next();
-  }
-});
+// Middlewares
+app.use(cors({
+  origin: "*",
+  methods: ["GET", "POST"],
+  allowedHeaders: ["Content-Type"],
+  credentials: true,
+}));
+app.use(helmet({
+  crossOriginEmbedderPolicy: false,
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+  contentSecurityPolicy: false,
+}));
 app.use(morgan("dev"));
 app.use(express.json());
 
+// Socket.IO
 app.set("io", io);
-// Configurar Socket.IO
-io.on("connection", (socket: any) => {
+io.on("connection", (socket) => {
   console.log("Cliente conectado");
 
-  socket.on("chat message", (msg: any) => {
-    console.log("Mensagem recebida: " + msg);
+  socket.on("chat message", (msg) => {
+    console.log("Mensagem recebida:", msg);
     io.emit("chat message", msg);
   });
 
@@ -69,10 +60,45 @@ io.on("connection", (socket: any) => {
   });
 });
 
+// Rotas
 app.use(authRouter);
 app.use(leilaoRouter);
-app.use(lancesRouter)
+app.use(lancesRouter);
 app.use(router);
+
+// Swagger
+const swaggerOptions = {
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "Minha API",
+      version: "1.0.0",
+      description: "Documentação da API",
+    },
+    servers: [
+      {
+        url: "http://localhost:3000",
+        description: "Servidor local",
+      },
+    ],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
+        },
+      },
+    },
+    security: [{ bearerAuth: [] }],
+  },
+  apis: ["./src/routes/*.ts"],
+};
+
+const swaggerSpec = swaggerJSDoc(swaggerOptions);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+// Inicia o servidor
 server.listen(port, () => {
   console.log(`Servidor rodando na porta ${port}`);
 });

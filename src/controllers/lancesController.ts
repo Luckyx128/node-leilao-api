@@ -1,11 +1,10 @@
 import LanceService from '../services/lancesService'
 import { Request,Response } from 'express';
 interface LanceLeilao {
-   Id_Leilao: number;
-   Id_GrupoLances: number;
-   Mt_Usuario: number;
-   Dh_Lance?: string;
-   Vr_Lance: number;
+  valor: number;
+  username: string;
+  idLeilao: number;
+  Dh_Lance: string;
  }
 const LancesController = {
    realizarLance: async (req:Request,res:Response) => {

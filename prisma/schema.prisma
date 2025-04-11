@@ -1,380 +1,99 @@
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["multiSchema"]
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  schemas  = ["Base", "Gerencial", "Leilao", "Loja"]
 }
 
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model Tb_Lista_Importacoes {
-  Co_Importacao    Int       @default(autoincrement())
-  Co_Tp_Importacao Int?      @db.SmallInt
-  Co_Ct_Importacao Int?      @db.SmallInt
-  Dt_Importacao    DateTime? @db.Timestamp(6)
-  Mt_Importacao    Int?
-  Qt_Importado     BigInt?
-  Dt_Alteracao     DateTime? @db.Timestamp(6)
-  Mt_Alteracao     Int?
-  De_Observacao    String?   @db.VarChar(100)
-  Ic_Ativo         Int?      @db.SmallInt
-
-  @@ignore
-  @@schema("Gerencial")
+model roles {
+  id                         Int     @id @default(autoincrement())
+  name                       String  @unique @db.VarChar(50)
+  users_users_role_idToroles users[] @relation("users_role_idToroles")
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model Tb_Moedas_Bonificacao {
-  Id_Moedas_Bonificacao Int       @id(map: "PK_Tb_Moedas_Bonificacao") @default(autoincrement())
-  Dt_Bonificacao        DateTime? @db.Date
-  Mt_Usuario            Int?
-  De_Bonificacao        String?   @db.VarChar(100)
-  Vr_Bonificacao        BigInt?
-  St_Bonificacao        Int?      @db.SmallInt
-  Co_Importacao         BigInt?
-  Dt_Cadastro           DateTime? @db.Timestamp(6)
-  Mt_Cadastro           Int?
-  Dt_Alteracao          DateTime? @db.Timestamp(6)
-  Mt_Alteracao          Int?
-
-  @@schema("Gerencial")
+model status {
+  id       Int        @id @default(autoincrement())
+  nome     String     @db.VarChar(255)
+  leilao   leilao[]   @relation("leilao_status")
+  produtos produtos[] @relation("produto_status_produtos_idTproduto")
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model Tb_Moedas_Deducao {
-  Id_Moedas_Deducao Int       @id(map: "PK_Tb_Moedas_Deducao") @default(autoincrement())
-  Dt_Deducao        DateTime? @db.Date
-  Mt_Usuario        Int?
-  De_Deducao        String?   @db.VarChar(100)
-  Vr_Deducao        BigInt?
-  St_Deducao        Int?      @db.SmallInt
-  Co_Importacao     BigInt?
-  Dt_Cadastro       DateTime? @db.Timestamp(6)
-  Mt_Cadastro       Int?
-  Dt_Alteracao      DateTime? @db.Timestamp(6)
-  Mt_Alteracao      Int?
+model users {
+  role_id                    Int?
+  username                   String @id @db.VarChar(50)
+  name                       String @db.VarChar(100)
+  password                   String @db.VarChar(255)
+  roles_users_role_idToroles roles? @relation("users_role_idToroles", fields: [role_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_role")
 
-  @@schema("Gerencial")
+  // Relação com a tabela de lances
+  laces_lances_usename lances[] @relation("lances_users_username_lances")
+
+  // Relação com a tabela de leilões
+  leilao_users_username leilao[] @relation("leilao_users_username")
+
+  //Relação com a tabela de saldo
+  saldo saldo?
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model Tb_Usuarios {
-  Id_Usuario   Int       @id(map: "PK_Tb_Usuarios") @default(autoincrement())
-  Mt_Usuario   Int?      @unique(map: "UK_Mt_Usuario_Tb_Usuarios")
-  Sn_Usuario   String?   @db.VarChar(60)
-  Nv_Acesso    Int?      @db.SmallInt
-  Dt_Cadastro  DateTime? @db.Timestamp(6)
-  Mt_Cadastro  Int?
-  Dt_Alteracao DateTime? @db.Timestamp(6)
-  Mt_Alteracao Int?
+model leilao {
+  id                 Int    @id @default(autoincrement())
+  lance_inicial      Int    @db.Integer
+  data_inicial       String @db.VarChar(255)
+  matricula_arremate String @db.VarChar(50)
+  ultimo_lance       Int    @db.Integer
+  data_final         String @db.VarChar(255)
+  leilao_status      Int    @db.Integer
 
-  @@schema("Gerencial")
+  // Relação com a tabela de usuários
+  users_username users? @relation("leilao_users_username", fields: [matricula_arremate], references: [username], onDelete: NoAction, onUpdate: NoAction, map: "fk_leilao_users")
+
+  // Relação com a tabela de status
+  leilao_id_status status @relation("leilao_status", fields: [leilao_status], references: [id], map: "fk_leilao_status")
+
+  // Muitos-para-muitos com produtos
+  produtos   produtos @relation("LeilaoProdutos", fields: [produtosId], references: [id])
+  produtosId Int
+
+  // Relação com a tabela de lances
+  lances_lances_leilao lances[] @relation("lances_lances_leilao")
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model Tb_Usuarios_Moedas {
-  Id_Usuarios_Moedas Int       @id(map: "PK_Tb_Usuarios_Moedas") @default(autoincrement())
-  Dt_Moedas          DateTime? @db.Date
-  Mt_Usuario         Int?
-  Qt_Moedas          BigInt?
-  Observacao         String?   @db.VarChar(100)
-  Vr_Bonificacao     BigInt?
-  De_Bonificacao     String?   @db.VarChar(100)
-  Vr_Deducao         BigInt?
-  De_Deducao         String?   @db.VarChar(100)
-  St_Moedas          Int?      @db.SmallInt
-  Co_Importacao      BigInt?
-  Co_Tp_Importacao   Int?      @db.SmallInt
-  Dt_Cadastro        DateTime? @db.Timestamp(6)
-  Mt_Cadastro        Int?
-  Dt_Alteracao       DateTime? @db.Timestamp(6)
-  Mt_Alteracao       Int?
+model produtos {
+  id             Int    @id @default(autoincrement())
+  nome           String @db.VarChar(255)
+  valor          Int    @db.Integer
+  quantidade     Int    @db.Integer
+  produto_status Int    @db.Integer
 
-  @@schema("Gerencial")
+  // Relação com status do produto
+  produto_status_produtos_idTproduto status @relation("produto_status_produtos_idTproduto", fields: [produto_status], references: [id], map: "fk_produto_status")
+
+  // Muitos-para-muitos com leilões
+  leiloes leilao[] @relation("LeilaoProdutos")
 }
 
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model Tb_Historico_Produtos {
-  Id_Historico_Produtos Int       @default(autoincrement())
-  Id_Produto            Int?
-  Id_ProdutoGrupo       Int?
-  Id_ProdutoSubGrupo    Int?
-  No_Produto            String?   @db.VarChar(50)
-  De_Produto            String?   @db.VarChar(300)
-  Img_Produto           String?   @db.VarChar(1000)
-  Qt_Estoque            BigInt?
-  Vr_Produto            Decimal?  @db.Decimal
-  St_Produto            Int?      @db.SmallInt
-  Co_Contrato           Int?
-  Dt_Cadastro           DateTime? @db.Timestamp(6)
-  Mt_Cadastro           Int?
-  Dt_Alteracao          DateTime? @db.Timestamp(6)
-  Mt_Alteracao          Int?
+model lances {
+  id       Int    @id @default(autoincrement())
+  valor    Int    @db.Integer
+  Dh_Lance String @db.VarChar(255)
 
-  @@ignore
-  @@schema("Loja")
+  laces_lances_usename users  @relation("lances_users_username_lances", fields: [username], references: [username], onDelete: NoAction, onUpdate: NoAction, map: "fk_lances_users")
+  username             String
+
+  // Relação com leilão
+  lances_lances_leilao leilao @relation("lances_lances_leilao", fields: [lances_id_leilao], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_lances_leilao")
+  lances_id_leilao     Int
 }
 
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model Tb_Produtos {
-  Id_Produto         Int       @default(autoincrement())
-  Id_ProdutoGrupo    Int?
-  Id_ProdutoSubGrupo Int?
-  No_Produto         String?   @db.VarChar(50)
-  De_Produto         String?   @db.VarChar(300)
-  Img_Produto        String?   @db.VarChar(1000)
-  Qt_Estoque         BigInt?
-  Vr_Produto         Decimal?  @db.Decimal
-  St_Produto         Int?      @db.SmallInt
-  Co_Contrato        Int?
-  Dt_Cadastro        DateTime? @db.Timestamp(6)
-  Mt_Cadastro        Int?
-  Dt_Alteracao       DateTime? @db.Timestamp(6)
-  Mt_Alteracao       Int?
+model saldo {
+  id    Int    @id @default(autoincrement())
+  valor Int    @db.Integer
+  user  String @unique
 
-  @@ignore
-  @@schema("Loja")
+  // Relação com usuário
+  users users @relation(fields: [user], references: [username])
 }
 
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model Tb_Produtos_Desejos {
-  Id_Produtos_Desejos Int       @default(autoincrement())
-  Id_Produto          Int?
-  Dt_Desejo           DateTime? @db.Timestamp(6)
-  Mt_Usuario          Int?
-  St_Desejo           Int?      @db.SmallInt
-
-  @@ignore
-  @@schema("Loja")
-}
-
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
-model Tb_Produtos_Log {
-  Id_Produtos_Log   Int       @default(autoincrement())
-  Id_Produtos       Int?
-  Dt_Log            DateTime? @default(now()) @db.Timestamp(6)
-  Mt_Alteracao      Int?
-  De_Motivo         String?   @db.VarChar(300)
-  Qt_Estoque_Antigo BigInt?
-  Qt_Estoque_Novo   BigInt?
-
-  @@ignore
-  @@schema("Loja")
-}
-
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model Tb_Categoria_Importacao {
-  Id_Categoria Int       @default(autoincrement())
-  De_Categoria String?   @db.VarChar(300)
-  Dt_Cadastro  DateTime? @db.Timestamp(6)
-  Mt_Cadastro  Int?
-  Dt_Alteracao DateTime? @db.Timestamp(6)
-  Mt_Alteracao Int?
-  Ic_Ativo     Int?      @db.SmallInt
-
-  @@ignore
-  @@schema("Base")
-}
-
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model Tb_Grupo_Leilao {
-  Id_Grupo     Int       @default(autoincrement())
-  De_Grupo     String?   @db.VarChar(300)
-  Dt_Cadastro  DateTime? @db.Timestamp(6)
-  Mt_Cadastro  Int?
-  Dt_Alteracao DateTime? @db.Timestamp(6)
-  Mt_Alteracao Int?
-  Ic_Ativo     Int?      @db.SmallInt
-
-  @@ignore
-  @@schema("Base")
-}
-
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model Tb_Grupo_Produto {
-  Id_Grupo     Int       @default(autoincrement())
-  De_Grupo     String?   @db.VarChar(300)
-  Dt_Cadastro  DateTime? @db.Timestamp(6)
-  Mt_Cadastro  Int?
-  Dt_Alteracao DateTime? @db.Timestamp(6)
-  Mt_Alteracao Int?
-  Ic_Ativo     Int?      @db.SmallInt
-
-  @@ignore
-  @@schema("Base")
-}
-
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model Tb_Nivel_Acesso {
-  Id_Nivel     Int       @default(autoincrement())
-  De_Nivel     String?   @db.VarChar(300)
-  Dt_Cadastro  DateTime? @db.Timestamp(6)
-  Mt_Cadastro  Int?
-  Dt_Alteracao DateTime? @db.Timestamp(6)
-  Mt_Alteracao Int?
-  Ic_Ativo     Int?      @db.SmallInt
-
-  @@ignore
-  @@schema("Base")
-}
-
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
-model Tb_Pontuacao_Nivel_Cwb {
-  Id_Pontuacao_Nivel Int       @default(autoincrement())
-  De_Nivel           String?   @db.VarChar(20)
-  Co_Nivel           Int?      @db.SmallInt
-  Id_Tipo_Escala     Int?      @db.SmallInt
-  Vr_Nivel           Int?      @db.SmallInt
-  St_Pontuacao_Nivel Int?      @db.SmallInt
-  Dt_Cadastro        DateTime? @db.Timestamp(6)
-  Mt_Cadastro        String?   @db.VarChar(7)
-  Dt_Alteracao       DateTime? @db.Timestamp(6)
-  Mt_Alteracao       String?   @db.VarChar(7)
-
-  @@ignore
-  @@schema("Base")
-}
-
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model Tb_Status_Leilao {
-  Id_Status    Int       @default(autoincrement())
-  De_Status    String?   @db.VarChar(300)
-  Dt_Cadastro  DateTime? @db.Timestamp(6)
-  Mt_Cadastro  Int?
-  Dt_Alteracao DateTime? @db.Timestamp(6)
-  Mt_Alteracao Int?
-  Ic_Ativo     Int?      @db.SmallInt
-
-  @@ignore
-  @@schema("Base")
-}
-
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model Tb_Status_Produto {
-  Id_Status    Int       @default(autoincrement())
-  De_Status    String?   @db.VarChar(300)
-  Dt_Cadastro  DateTime? @db.Timestamp(6)
-  Mt_Cadastro  Int?
-  Dt_Alteracao DateTime? @db.Timestamp(6)
-  Mt_Alteracao Int?
-  Ic_Ativo     Int?      @db.SmallInt
-
-  @@ignore
-  @@schema("Base")
-}
-
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model Tb_SubGrupo_Produto {
-  Id_SubGrupo  Int       @default(autoincrement())
-  De_SubGrupo  String?   @db.VarChar(300)
-  Dt_Cadastro  DateTime? @db.Timestamp(6)
-  Mt_Cadastro  Int?
-  Dt_Alteracao DateTime? @db.Timestamp(6)
-  Mt_Alteracao Int?
-  Ic_Ativo     Int?      @db.SmallInt
-
-  @@ignore
-  @@schema("Base")
-}
-
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model Tb_Tipo_Importacao {
-  Id_Tipo      Int       @default(autoincrement())
-  De_Tipo      String?   @db.VarChar(300)
-  Dt_Cadastro  DateTime? @db.Timestamp(6)
-  Mt_Cadastro  Int?
-  Dt_Alteracao DateTime? @db.Timestamp(6)
-  Mt_Alteracao Int?
-  Ic_Ativo     Int?      @db.SmallInt
-
-  @@ignore
-  @@schema("Base")
-}
-
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model Tb_Tipo_Leilao {
-  Id_Tipo      Int       @default(autoincrement())
-  De_Tipo      String?   @db.VarChar(300)
-  Dt_Cadastro  DateTime? @db.Timestamp(6)
-  Mt_Cadastro  Int?
-  Dt_Alteracao DateTime? @db.Timestamp(6)
-  Mt_Alteracao Int?
-  Ic_Ativo     Int?      @db.SmallInt
-
-  @@ignore
-  @@schema("Base")
-}
-
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model Tb_Entrega_Leilao {
-  Id_Entrega_Leilao Int       @default(autoincrement())
-  Id_Leilao         Int?
-  Mt_Vencedor       Int?
-  Mt_Premiador      Int?
-  Dh_Entrega        DateTime? @db.Timestamp(6)
-  Img_Entrega       String?   @db.VarChar(1000)
-  Ic_Divulgar       Int?      @db.SmallInt
-
-  @@ignore
-  @@schema("Leilao")
-}
-
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model Tb_Lance_Leilao {
-  Id_Lance_Leilao Int       @default(autoincrement())
-  Id_Leilao       Int?
-  Id_GrupoLances  Int?
-  Mt_Usuario      Int?
-  Dh_Lance        DateTime? @db.Timestamp(6)
-  Vr_Lance        Decimal?  @db.Decimal
-
-  @@ignore
-  @@schema("Leilao")
-}
-
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model Tb_Leilao {
-  Id_leilao          Int       @default(autoincrement())
-  Id_produto         Int?
-  Dh_Inicio          DateTime? @db.Timestamp(6)
-  Dh_fim             DateTime? @db.Timestamp(6)
-  Vr_Inicial         Decimal?  @db.Decimal
-  Vr_Incremento      Decimal?  @db.Decimal
-  Vr_Arremate        Decimal?  @db.Decimal
-  Tp_Leilao          Int?
-  Gp_Leilao          Int?
-  Ic_Status          Int?      @db.SmallInt
-  Mt_Aremate         Int?
-  Co_Contrato        Int?
-  Mt_Gerencia        String?   @db.VarChar(5000)
-  Mt_Coordenacao     String?   @db.VarChar(5000)
-  Mt_Supervisao      String?   @db.VarChar(5000)
-  Dt_Cadastro        DateTime? @db.Timestamp(6)
-  Mt_Cadastro        Int?
-  Dt_Alteracao       DateTime? @db.Timestamp(6)
-  Mt_Alteracao       Int?
-  Dt_Inicio_Admissao DateTime? @db.Date
-  Dt_Fim_Admissao    DateTime? @db.Date
-
-  @@ignore
-  @@schema("Leilao")
-}
+// 15,65,42,28,36
