@@ -14,6 +14,7 @@ import authRouter from "./routes/authRouter";
 import leilaoRouter from "./routes/leilaoRouter";
 import lancesRouter from "./routes/lancesRouter";
 import router from "./routes/userRouter";
+import saldoRouter from "./routes/saldoRouter";
 
 dotenv.config();
 
@@ -59,7 +60,8 @@ io.on("connection", (socket) => {
 app.use("/auth",authRouter);
 app.use("/leilao",leilaoRouter);
 app.use("/lances",lancesRouter);
-app.use("/router",router);
+app.use("/saldo", saldoRouter);
+app.use("/user",router);
 
 // Swagger
 const swaggerOptions = {

@@ -20,6 +20,28 @@ const userController = {
       res.status(500).json({ error: "Internal server error" });
     }
   },
+  createUser: async (req: CustomRequest, res: CustomResponse) => {
+    const { name, username, password } = req.body;
+    try {
+      const user = await userService.createUser(name, username, password);
+      res.status(201).json({ message: "User created", user });
+    } catch (error) {
+      console.error("Error creating user:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  },
+  getUserByUsername: async (req: CustomRequest, res: CustomResponse) => {
+    const { username } = req.params;
+    try {
+      const user = await userService.getUserByUsername(username);
+      if (!user) {
+         res.status(404).json({ message: "User not found" });
+      }
+      res.json({ message: "User retrieved", user });
+    } catch (error) {
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
 };
 
 export default userController;
