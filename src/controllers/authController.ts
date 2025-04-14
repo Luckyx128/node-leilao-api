@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import authService from "../services/authService";
+import userService from "../services/userServices";
 interface User {
   name: string;
   username: string;
@@ -17,16 +18,13 @@ const authController = {
       const result = await authService.login(username, password);
       const io = req.app.get("io");
 
-        console.log("Logado");
         io.emit("login", {
           registration: user.username,
           password: user.password
         });
-        console.log(result);
         if(result === "incorrect")  res
           .status(401)
           .json({ message: "Matricula ou Senha invalida" });
-        console.log(typeof result)
         if (typeof result === "object") res.json({
               message: { result },
             });
@@ -37,21 +35,14 @@ const authController = {
       res.status(500).json({ message: "Erro no banco de Dados" });
     }
   },
-  register: async (req: Request, res: Response) => {
+  reset: async (req: Request, res: Response) => {
     try {
-      const user: User = req.body;
-      if (!user.username || !user.password)   res.status(402).json({ message: "empty fields" });
-        const name = user.name;
-        const username = user.username;
-        const password = user.password;
-        const result = await authService.register(username, name, password);
-
-        if (result === "exists") res.status(400).json({ message: "registration already exists" });
-
-        if (typeof result === 'object' ) res.json({
-            message: { result },
-          });
-
+      const username: string = req.params.username;
+     
+      if (!username)   res.status(402).json({ message: "empty fields" });
+       
+        await userService.updateUserPassword(username,"Mudar@123");
+        res.json({ message: "Password reset successfully" });
 
     } catch (error) {
       console.error(error);
@@ -69,11 +60,10 @@ const authController = {
         if (result === "incorrect")   res
             .status(401)
             .json({ message: "Invalid registration or password" });
-
-            res.status(500).json({ message: "data base error" });
+        if (result === "success") res.json({ message: "Senha atualizada com sucesso!" });
 
     } catch (error) {
-      console.log(error); 
+      console.error(error); 
       res.status(500).json({ message: "data base error" });
     }
   },

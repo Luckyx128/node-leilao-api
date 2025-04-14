@@ -5,11 +5,8 @@ interface CustomRequest extends Request {
   // outros campos personalizados
 }
 
-interface CustomResponse extends Response {
-  // campos personalizados da resposta, se houver
-}
 
-const AuthMiddleware = (req: CustomRequest, res: CustomResponse, next: NextFunction) => {
+const AuthMiddleware = (req: CustomRequest, res: Response, next: NextFunction) => {
   try {
     const token = req.header('Authorization')?.replace('Bearer ', '');
     if (!token) throw new Error('Token não fornecido');
@@ -18,6 +15,7 @@ const AuthMiddleware = (req: CustomRequest, res: CustomResponse, next: NextFunct
     console.log(decoded);
     next();
   } catch (error) {
+    console.error('Erro de autenticação:', error);
     res.status(401).send({ error: 'Por favor, autentique-se' });
   }
 };

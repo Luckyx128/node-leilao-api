@@ -48,7 +48,8 @@ const userService = {
         data: {
             password: hashedPassword,
         },
-        });
+        }); 
+        
         } catch (error) {
             console.error("Error updating password:", error);
             throw new Error("Error updating password");

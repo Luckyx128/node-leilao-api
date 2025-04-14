@@ -8,10 +8,8 @@ interface LanceLeilao {
  }
 const LancesController = {
    realizarLance: async (req:Request,res:Response) => {
-      console.log(req.body)
       const lance:LanceLeilao = req.body;
 
-      console.log(lance)
       try{
          const result = await LanceService.fazerLance(lance)
          res.json({message:result})

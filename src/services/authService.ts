@@ -21,14 +21,11 @@ const authService = {
   login: async (username: string, password: string) => {
     try {
       const user = await userService.getUserByUsername(username);
-      console.log(user);
       if (!user) return "incorrect";
 
         const oldPassword: string = user.password || "";
-        console.log(oldPassword, password); 
 
         const isMatch = await bcrypt.compare(password, oldPassword);
-        console.log(isMatch);
       if (!isMatch) return "incorrect";
       const token = jwt.sign(
           { id: user.username },
@@ -50,26 +47,11 @@ const authService = {
       throw new Error("Login failed");
     }
   },
-  register: async (name:string,username: string, password: string) => {
-    try {
-      const user =  await userService.getUserByUsername(username);
-      if (user) return "exists";
-        const hashedPassword = await bcrypt.hash(password, 10);
-        return await userService.createUser(name, username, hashedPassword);
-
-
-
-    } catch (error) {
-      console.error("Error during registration:", error);
-      throw new Error("Registration failed");
-    }
-  },
   updateLogin: async (username: string, password: string) => {
     try {
       const user = await userService.getUserByUsername(username);
       if (!user) return "incorrect";
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const result = await userService.updateUserPassword(username, hashedPassword);
+        const result = await userService.updateUserPassword(username, password);
         if (result) return "success";
 
 

@@ -66,21 +66,17 @@ authRouter.post("/login", authController.login);
 authRouter.put("/password",AuthMiddleware, authController.updateLogin);
 /**
  * @swagger
- * /auth/reset-password:
+ * /auth/reset-password/{username}:
  *   post:
  *     summary: Resete a senha quando esquecida
  *     tags: [Auth]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:  # Campos obrigatórios
- *               - username
- *             properties:
- *               username:
- *                 type: string
+ *     parameters:
+ *       - in: path
+ *         name: username
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Nome de usuario
  *     responses:
  *       200:
  *         description: Reseta a senha do usuario enviado no body
@@ -89,6 +85,6 @@ authRouter.put("/password",AuthMiddleware, authController.updateLogin);
  *             example:
  *               {username: 123456}
  */
-authRouter.post("/reset-password", authController.register);
+authRouter.post("/reset-password/:username", authController.reset);
 
 export default authRouter;
