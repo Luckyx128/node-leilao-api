@@ -15,6 +15,7 @@ import leilaoRouter from "./routes/leilaoRouter";
 import lancesRouter from "./routes/lancesRouter";
 import router from "./routes/userRouter";
 import saldoRouter from "./routes/saldoRouter";
+import produtosRouter from "./routes/ProdutosRouter";
 
 dotenv.config();
 
@@ -62,6 +63,7 @@ app.use("/leilao",leilaoRouter);
 app.use("/lances",lancesRouter);
 app.use("/saldo", saldoRouter);
 app.use("/user",router);
+app.use("/produtos", produtosRouter);
 
 // Swagger
 const swaggerOptions = {
