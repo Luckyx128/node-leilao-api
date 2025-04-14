@@ -1,7 +1,7 @@
 // routes/userRoutes.ts
 import { Router } from "express";
 import userController from "../controllers/userController";
-
+import authMiddleware from "../middleware/auth.middleware";
 const router = Router();
 
 /**
@@ -31,11 +31,11 @@ const router = Router();
  *       500:
  *         description: Erro no servidor
  */
-router.get("/", userController.getUsers);
+router.get("/", authMiddleware, userController.getUsers);
 
 /**
  * @swagger
- * /{username}:
+ * /user/{username}:
  *   get:
  *     summary: Obtém um usuário específico
  *     tags: [Usuários]
@@ -61,7 +61,7 @@ router.get("/", userController.getUsers);
  *       404:
  *         description: Usuário não encontrado
  */
-router.get("/:username", userController.getUserByUsername);
+router.get("/:username", authMiddleware, userController.getUserByUsername);
 
 /**
  * @swagger

@@ -1,4 +1,3 @@
-import prisma from "../prisma/config";
 import userService from "./userServices";
 import bcrypt from "bcrypt";
 import dotenv from 'dotenv';
@@ -22,12 +21,14 @@ const authService = {
   login: async (username: string, password: string) => {
     try {
       const user = await userService.getUserByUsername(username);
-
+      console.log(user);
       if (!user) return "incorrect";
 
         const oldPassword: string = user.password || "";
-        const isMatch = await bcrypt.compare(password, oldPassword);
+        console.log(oldPassword, password); 
 
+        const isMatch = await bcrypt.compare(password, oldPassword);
+        console.log(isMatch);
       if (!isMatch) return "incorrect";
       const token = jwt.sign(
           { id: user.username },
@@ -45,6 +46,7 @@ const authService = {
       };
     return loginResponse
     } catch (error) {
+      console.error("Error during login:", error);
       throw new Error("Login failed");
     }
   },
@@ -58,6 +60,7 @@ const authService = {
 
 
     } catch (error) {
+      console.error("Error during registration:", error);
       throw new Error("Registration failed");
     }
   },
@@ -71,6 +74,7 @@ const authService = {
 
 
     } catch (error) {
+      console.error("Error during password update:", error);
       throw new Error("Update failed");
     }
   },

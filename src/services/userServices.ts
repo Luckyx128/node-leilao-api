@@ -1,4 +1,5 @@
 import prisma from "../prisma/config";
+import bcrypt from "bcrypt";
 const userService = {
   getUser: async () => {
       try {
@@ -24,13 +25,14 @@ const userService = {
     },
   createUser: async (name:string,username: string, password: string) => {
       try {
-    return prisma.users.create({
-      data: {
-        name,
-        username,
-        password,
-      },
-    });
+        const hashedPassword = await bcrypt.hash(password, 10);
+        return prisma.users.create({
+          data: {
+            name,
+            username,
+            password: hashedPassword,
+          },
+        });
         }catch (error) {
             console.error("Error creating user:", error);
             throw new Error("Error creating user");
@@ -38,12 +40,13 @@ const userService = {
   },
     updateUserPassword: async (username: string, password: string) => {
       try {
+        const hashedPassword = await bcrypt.hash(password, 10);
         return prisma.users.update({
         where: {
             username,
         },
         data: {
-            password,
+            password: hashedPassword,
         },
         });
         } catch (error) {

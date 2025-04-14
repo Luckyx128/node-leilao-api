@@ -1,5 +1,7 @@
 import {Router} from "express";
 import leilaoController from "../controllers/leilaoController";
+import AuthMiddleware from "../middleware/auth.middleware"; 
+
 const leilaoRouter = Router()
 
 /**
@@ -49,7 +51,7 @@ const leilaoRouter = Router()
  *                   type: string
  *                   example: Erro no banco de dados
  */
-leilaoRouter.get("/leiloes",leilaoController.listLeiloes)
+leilaoRouter.get("/leiloes", AuthMiddleware,leilaoController.listLeiloes)
 
 /**
  * @swagger
@@ -97,6 +99,6 @@ leilaoRouter.get("/leiloes",leilaoController.listLeiloes)
  *                   type: string
  *                   example: Erro no banco de dados
  */
-leilaoRouter.get("/leilao/:id",leilaoController.consultLeilao)
+leilaoRouter.get("/leilao/:id",AuthMiddleware,leilaoController.consultLeilao)
 
 export default leilaoRouter

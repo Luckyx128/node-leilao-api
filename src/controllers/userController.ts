@@ -5,22 +5,20 @@ interface CustomRequest extends Request {
   // outros campos personalizados
 }
 
-interface CustomResponse extends Response {
-  // campos personalizados da resposta, se houver
-}
 
 const userController = {
-  getUsers: async (req: CustomRequest, res: CustomResponse) => {
+  getUsers: async (req: CustomRequest, res: Response) => {
     try {
       const user = await userService.getUser();
       const io = req.app.get("io");
       io.emit("userCreated", user);
       res.json({ message: "Users retrieved", user });
     } catch (error) {
+      console.error("Error retrieving users:", error);
       res.status(500).json({ error: "Internal server error" });
     }
   },
-  createUser: async (req: CustomRequest, res: CustomResponse) => {
+  createUser: async (req: CustomRequest, res: Response) => {
     const { name, username, password } = req.body;
     try {
       const user = await userService.createUser(name, username, password);
@@ -30,7 +28,7 @@ const userController = {
       res.status(500).json({ error: "Internal server error" });
     }
   },
-  getUserByUsername: async (req: CustomRequest, res: CustomResponse) => {
+  getUserByUsername: async (req: CustomRequest, res: Response) => {
     const { username } = req.params;
     try {
       const user = await userService.getUserByUsername(username);
@@ -39,6 +37,7 @@ const userController = {
       }
       res.json({ message: "User retrieved", user });
     } catch (error) {
+      console.error("Error retrieving user:", error);
       res.status(500).json({ error: "Internal server error" });
     }
   }

@@ -1,5 +1,7 @@
 import { Router } from "express";
 import authController from "../controllers/authController";
+import AuthMiddleware from "../middleware/auth.middleware";
+
 const authRouter = Router();
 
 /**
@@ -61,7 +63,7 @@ authRouter.post("/login", authController.login);
  *             example:
  *               {username: 123456, password: 123456}
  */
-authRouter.put("/password", authController.updateLogin);
+authRouter.put("/password",AuthMiddleware, authController.updateLogin);
 /**
  * @swagger
  * /auth/reset-password:

@@ -1,5 +1,7 @@
 import { Router } from "express";
 import SaldoController from "../controllers/saldoController";
+import authMiddleware from "../middleware/auth.middleware";
+
 const saldoRouter = Router();
 
 /**
@@ -48,7 +50,7 @@ const saldoRouter = Router();
  *                   type: string
  *                   example: Erro ao consultar saldo
  */
-saldoRouter.get("/:matricula", SaldoController.consultarSaldo);
+saldoRouter.get("/:matricula", authMiddleware, SaldoController.consultarSaldo);
 
 /**
  * @swagger
@@ -99,6 +101,6 @@ saldoRouter.get("/:matricula", SaldoController.consultarSaldo);
  *                   type: string
  *                   example: Erro ao atualizar saldo
  */
-saldoRouter.put("/:matricula", SaldoController.atualizarSaldo);
+saldoRouter.put("/:matricula", authMiddleware, SaldoController.atualizarSaldo);
 
 export default saldoRouter;

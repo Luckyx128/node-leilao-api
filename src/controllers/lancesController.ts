@@ -16,6 +16,7 @@ const LancesController = {
          const result = await LanceService.fazerLance(lance)
          res.json({message:result})
       }catch(error){
+         console.error(error);
          res.status(500).json({message:"Erro no banco de dados"});
       }
 

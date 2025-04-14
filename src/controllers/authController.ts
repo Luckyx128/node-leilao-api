@@ -22,7 +22,7 @@ const authController = {
           registration: user.username,
           password: user.password
         });
-
+        console.log(result);
         if(result === "incorrect")  res
           .status(401)
           .json({ message: "Matricula ou Senha invalida" });
@@ -33,6 +33,7 @@ const authController = {
 
 
     } catch (error) {
+      console.error(error);
       res.status(500).json({ message: "Erro no banco de Dados" });
     }
   },
@@ -47,13 +48,13 @@ const authController = {
 
         if (result === "exists") res.status(400).json({ message: "registration already exists" });
 
-
-          res.json({
+        if (typeof result === 'object' ) res.json({
             message: { result },
           });
 
 
     } catch (error) {
+      console.error(error);
       res.status(500).json({ message: "data base error" });
     }
   },
@@ -72,6 +73,7 @@ const authController = {
             res.status(500).json({ message: "data base error" });
 
     } catch (error) {
+      console.log(error); 
       res.status(500).json({ message: "data base error" });
     }
   },
