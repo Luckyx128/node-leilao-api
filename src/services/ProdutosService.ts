@@ -40,9 +40,27 @@ class ProdutosService {
 		return produtos;
 	};
 
-	teste = async () => {
-		console.log("Teste de serviço");
+	getProdutoById = async (id: number) => {
+		const produto = await prisma.produtos.findUnique({
+			where: { id },
+		});
+		return produto;
+	};
+	getProdutoByStatus = async (status: number) => {
+		const produtos = await prisma.produtos.findMany({
+			where: { produto_status: status },
+		});
+		return produtos;
+	};
+	deleteProduto = async (id: number) => {
+		const produto = await prisma.produtos.update({
+			where: { id },
+			data: {
+				produto_status: 2,
+			},
+		});
+		return produto;
 	};
 }
-
+  
 export default new ProdutosService();

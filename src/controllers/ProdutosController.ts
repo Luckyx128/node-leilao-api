@@ -32,16 +32,51 @@ class ProdutosController {
 		}
 	};
 
-	test = async (req: Request, res: Response) => {
+	getProdutos = async (req: Request, res: Response) => {
 		try {
-			await this.produtosService.teste();
-
-			res.status(200).json({ message: "Teste executado com sucesso" });
+			const produtos = await this.produtosService.getProdutos();
+			res.status(200).json(produtos);
 		} catch (error) {
-			console.error("Erro ao executar teste:", error);
-			res.status(500).json({ error: "Erro ao executar teste" });
+			console.error("Erro ao obter produtos:", error);
+			res.status(500).json({ error: "Erro ao obter produtos" });
 		}
 	};
+	getProdutoById = async (req: Request, res: Response) => {
+		try {
+			const id = parseInt(req.params.id);
+			const produto = await this.produtosService.getProdutoById(id);
+			if (!produto) {
+				 res.status(404).json({ error: "Produto não encontrado" });
+			}
+			res.status(200).json(produto);
+		} catch (error) {
+			console.error("Erro ao obter produto:", error);
+			res.status(500).json({ error: "Erro ao obter produto" });
+		}
+	}
+	deleteProduto = async (req: Request, res: Response) => {
+		try {
+			const id = parseInt(req.params.id);
+			const produto = await this.produtosService.deleteProduto(id);
+			if (!produto) {
+				 res.status(404).json({ error: "Produto não encontrado" });
+			}
+			res.status(200).json({ message: "Produto deletado com sucesso" });
+		} catch (error) {
+			console.error("Erro ao deletar produto:", error);
+			res.status(500).json({ error: "Erro ao deletar produto" });
+		}
+	}
+	getProdutoByStatus = async (req: Request, res: Response) => {
+		try {
+			const status = parseInt(req.params.status);
+			const produtos = await this.produtosService.getProdutoByStatus(status);
+			res.status(200).json(produtos);
+		} catch (error) {
+			console.error("Erro ao obter produtos:", error);
+			res.status(500).json({ error: "Erro ao obter produtos" });
+		}
+	}
 }
 
 export default new ProdutosController();
