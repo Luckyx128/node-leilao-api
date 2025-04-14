@@ -8,6 +8,8 @@ import helmet from "helmet";
 import morgan from "morgan";
 import swaggerUi from "swagger-ui-express";
 import swaggerJSDoc from "swagger-jsdoc";
+import path from "path";
+
 
 // Rotas
 import authRouter from "./routes/authRouter";
@@ -26,7 +28,6 @@ const io = new Server(server, {
   cors: {
     origin: "*",
     methods: ["GET", "POST"],
-    credentials: true,
     allowedHeaders: ["Content-Type"],
   },
 });
@@ -58,13 +59,16 @@ io.on("connection", (socket) => {
 
 // Rotas
 //TODO: Ajustar rotas erro na condicionais das controller req não pode ser usada mais de uma vez
+
 app.use("/auth",authRouter);
 app.use("/leilao",leilaoRouter);
 app.use("/lances",lancesRouter);
 app.use("/saldo", saldoRouter);
 app.use("/user",router);
 app.use("/produtos", produtosRouter);
-
+app.use("/web", (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'index.html'));
+})
 // Swagger
 const swaggerOptions = {
   definition: {
@@ -76,7 +80,7 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: "http://localhost:3000",
+        url: `http://localhost:${port}`, // Updated to include the port variable
         description: "Servidor local",
       },
     ],
